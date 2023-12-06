@@ -1,15 +1,15 @@
 import java.util.Scanner;
 
 public class Draft {
+    private static double calculateRataNilai(int totalNilai, int jumlahMataPelajaran) {
+        return (double) totalNilai / jumlahMataPelajaran;
+    }
+    
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         String Username, Password;
-        String[][] kelas = {
-                {"1A", "1B", "1C", "1D", "1E", "1F", "1G", "1H", "1I"},
-        };
-        String[] mataPelajaran = {
-                "Daspro", "prakdaspro", "pkn", "matematika", "ctps", "k3", "bahasa inggris", "kti"
-        };
+        String[] kelas = {"1A", "1B", "1C", "1D", "1E", "1F", "1G", "1H", "1I"};
+        String[] mataPelajaran = {"Daspro", "prakdaspro", "pkn", "matematika", "ctps", "k3", "bahasa inggris", "kti"};
 
         boolean continueLogin = true;
         int[][] nilaiSiswa = new int[kelas.length][];
@@ -17,7 +17,7 @@ public class Draft {
         while (continueLogin) {
             System.out.print("Masukkan Username : ");
             Username = sc.nextLine();
-            System.out.print("Masukkan Password :");
+            System.out.print("Masukkan Password : ");
             Password = sc.nextLine();
 
             if (Username.equalsIgnoreCase("Dosen") && Password.equalsIgnoreCase("Admin")) {
@@ -36,71 +36,55 @@ public class Draft {
                     switch (pilihan) {
                         case 1:
                             // Implementasi pengisian nilai
-                            System.out.println("Pilih tingkat");
-                            System.out.println("1. Tingkat 1");
-                            System.out.print("Masukkan Tingkat : ");
-                            byte pilihTingkat = sc.nextByte();
-                            sc.nextLine(); // Membersihkan buffer masukan setelah nextByte
+                            System.out.println("Pilih kelas (1a-1i): ");
+                            String pilihKelasInput = sc.nextLine();
+                            int indexKelas = getIndexKelas(pilihKelasInput);
 
-                            if (pilihTingkat >= 1 && pilihTingkat <= kelas.length) {
-                                for (int i = 0; i < kelas[pilihTingkat - 1].length; i++) {
-                                    System.out.print(kelas[pilihTingkat - 1][i] + " ");
-                                }
-                                System.out.println("\nPilih kelas : ");
-                                String kelasTerpilih = sc.nextLine();
+                            if (indexKelas != -1) {
+                                System.out.println("Masukkan jumlah mahasiswa : ");
+                                int mhsw = sc.nextInt();
+                                sc.nextLine(); // Membersihkan buffer masukan setelah nextInt()
 
-                                if (isValidKelas(kelasTerpilih, kelas[pilihTingkat - 1])) {
-                                    System.out.println("Masukkan jumlah mahasiswa : ");
-                                    int mhsw = sc.nextInt();
-                                    sc.nextLine(); // Membersihkan buffer masukan setelah nextInt()
+                                nilaiSiswa[indexKelas] = new int[mhsw];
 
-                                    nilaiSiswa[pilihTingkat - 1] = new int[mhsw];
+                                for (int i = 0; i < mhsw; i++) {
+                                    System.out.println("Masukkan nama mahasiswa " + (i + 1) + " : ");
+                                    String namaSiswa = sc.nextLine();
+                                    int totalNilai = 0;
 
-                                    for (int i = 0; i < mhsw; i++) {
-                                        System.out.println("Masukkan nama mahasiswa " + (i + 1) + " : ");
-                                        String namaSiswa = sc.nextLine();
-                                        int totalNilai = 0;
-
-                                        for (int j = 0; j < mataPelajaran.length; j++) {
-                                            System.out.println("Masukkan nilai " + mataPelajaran[j] + " untuk " + namaSiswa + " : ");
-                                            int nilai = sc.nextInt();
-                                            sc.nextLine(); // Membersihkan buffer masukan setelah nextInt()
-                                            totalNilai += nilai;
-                                        }
-
-                                        // Simpan total nilai ke dalam array nilaiSiswa
-                                        nilaiSiswa[pilihTingkat - 1][i] = totalNilai;
+                                    for (int j = 0; j < mataPelajaran.length; j++) {
+                                        System.out.println("Masukkan nilai " + mataPelajaran[j] + " untuk " + namaSiswa + " : ");
+                                        int nilai = sc.nextInt();
+                                        sc.nextLine(); // Membersihkan buffer masukan setelah nextInt()
+                                        totalNilai += nilai;
                                     }
 
-                                    System.out.println("Pengisian nilai selesai.");
-                                } else {
-                                    System.out.println("Kelas tidak valid.");
+                                    // Simpan total nilai ke dalam array nilaiSiswa
+                                    nilaiSiswa[indexKelas][i] = totalNilai;
                                 }
+
+                                System.out.println("Pengisian nilai selesai.");
                             } else {
-                                System.out.println("Tingkat tidak valid.");
+                                System.out.println("Kelas tidak valid.");
                             }
                             break;
 
-                        case 2:
-                            // Menampilkan nilai setiap kelas
-                            System.out.println("Nilai Setiap Kelas:");
-                            for (int i = 0; i < kelas.length; i++) {
-                                System.out.println("Tingkat " + (i + 1));
-                                for (int j = 0; j < kelas[i].length; j++) {
-                                    System.out.println("Kelas " + kelas[i][j] + ":");
-                                    // Tampilkan nilai mahasiswa untuk kelas ini (jika ada)
-                                    if (nilaiSiswa[i] != null) {
-                                        for (int k = 0; k < nilaiSiswa[i].length; k++) {
-                                            System.out.println("Nama mahasiswa " + (k + 1) + ": " + sc.nextLine());
-                                            System.out.println("Total Nilai: " + nilaiSiswa[i][k]);
-                                        }
-                                    } else {
-                                        System.out.println("Belum ada data nilai untuk kelas ini.");
-                                    }
-                                    System.out.println("------------------------------");
-                                }
-                            }
-                            break;
+                            case 2:
+    for (int i = 0; i < kelas.length; i++) {
+        for (int j = 0; j < kelas[i].length; j++) {
+            System.out.println("Kelas " + kelas[i][j] + ":");
+            if (nilaiSiswa[i] != null) {
+                for (int k = 0; k < nilaiSiswa[i].length; k++) {
+                    System.out.println("Nama mahasiswa " + (k + 1) + ": " + namaSiswa[i][k]);
+                    System.out.println("Rata-rata Nilai: " + calculateRataNilai(nilaiSiswa[i][k], mataPelajaran.length));
+                }
+            } else {
+                System.out.println("Belum ada data nilai untuk kelas ini.");
+            }
+        }
+    }
+    break;
+
 
                         case 3:
                             System.out.println("Keluar dari program.");
@@ -113,7 +97,7 @@ public class Draft {
                     }
 
                     if (pilihan == 3) {
-                        break; // Keluar dari loop utama jika dosen memilih untuk keluar
+                        break;
                     }
                 }
             } else {
@@ -124,12 +108,16 @@ public class Draft {
         sc.close();
     }
 
-    private static boolean isValidKelas(String kelasTerpilih, String[] kelas) {
-        for (String k : kelas) {
-            if (k.equalsIgnoreCase(kelasTerpilih)) {
-                return true;
-            }
+    private static int getIndexKelas(String kelasTerpilih) {
+        // Mengonversi input 1a-1i menjadi indeks
+        char kelasChar = kelasTerpilih.charAt(0);
+        char subKelasChar = kelasTerpilih.charAt(1);
+
+        if (kelasChar >= '1' && kelasChar <= '9' && subKelasChar >= 'a' && subKelasChar <= 'i') {
+            int indexKelas = (kelasChar - '1') * 9 + (subKelasChar - 'a');
+            return indexKelas;
+        } else {
+            return -1; // Mengembalikan -1 jika kelas tidak valid
         }
-        return false;
     }
 }
