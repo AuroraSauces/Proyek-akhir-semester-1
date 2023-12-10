@@ -4,7 +4,7 @@ public class Draft {
     private static double calculateRataNilai(int totalNilai, int jumlahMataPelajaran) {
         return (double) totalNilai / jumlahMataPelajaran;
     }
-    
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         String Username, Password;
@@ -12,7 +12,8 @@ public class Draft {
         String[] mataPelajaran = {"Daspro", "prakdaspro", "pkn", "matematika", "ctps", "k3", "bahasa inggris", "kti"};
 
         boolean continueLogin = true;
-        int[][] nilaiSiswa = new int[kelas.length][];
+        int[][][] nilaiSiswa = new int[kelas.length][3][];
+        String[][] namaSiswa = new String[kelas.length][];
 
         while (continueLogin) {
             System.out.print("Masukkan Username : ");
@@ -24,14 +25,14 @@ public class Draft {
                 System.out.println("Login Dosen Berhasil");
                 System.out.println("======================================");
 
-                while (true) {  // Loop untuk memungkinkan pengisian kelas lebih dari satu kali
+                while (true) { 
                     System.out.println("Pilih tindakan:");
                     System.out.println("1. Isi Nilai Mahasiswa");
                     System.out.println("2. Lihat Nilai Setiap Kelas");
                     System.out.println("3. Keluar");
                     System.out.print("Masukkan pilihan: ");
                     byte pilihan = sc.nextByte();
-                    sc.nextLine(); // Membersihkan buffer masukan setelah nextByte
+                    sc.nextLine(); 
 
                     switch (pilihan) {
                         case 1:
@@ -43,24 +44,42 @@ public class Draft {
                             if (indexKelas != -1) {
                                 System.out.println("Masukkan jumlah mahasiswa : ");
                                 int mhsw = sc.nextInt();
-                                sc.nextLine(); // Membersihkan buffer masukan setelah nextInt()
+                                sc.nextLine(); 
 
-                                nilaiSiswa[indexKelas] = new int[mhsw];
+                                nilaiSiswa[indexKelas][0] = new int[mhsw]; //nilai tugas
+                                nilaiSiswa[indexKelas][1] = new int[mhsw]; //nilai ujian
+                                nilaiSiswa[indexKelas][2] = new int[mhsw]; //nilai praktek
+                                namaSiswa[indexKelas] = new String[mhsw];
 
                                 for (int i = 0; i < mhsw; i++) {
                                     System.out.println("Masukkan nama mahasiswa " + (i + 1) + " : ");
-                                    String namaSiswa = sc.nextLine();
-                                    int totalNilai = 0;
+                                    namaSiswa[indexKelas][i] = sc.nextLine();
+                                    int totalNilaiTugas = 0;
+                                    int totalNilaiUjian = 0;
+                                    int totalNilaiPraktek = 0;
 
                                     for (int j = 0; j < mataPelajaran.length; j++) {
-                                        System.out.println("Masukkan nilai " + mataPelajaran[j] + " untuk " + namaSiswa + " : ");
-                                        int nilai = sc.nextInt();
-                                        sc.nextLine(); // Membersihkan buffer masukan setelah nextInt()
-                                        totalNilai += nilai;
+                                        if (j < 2) { //tugas dan ujian
+                                            System.out.println("Masukkan nilai " + mataPelajaran[j] + " untuk " + namaSiswa[indexKelas][i] + " : ");
+                                            int nilai = sc.nextInt();
+                                            sc.nextLine();
+                                            if (j == 0) {
+                                                totalNilaiTugas += nilai;
+                                            } else {
+                                                totalNilaiUjian += nilai;
+                                            }
+                                        } else { //praktek
+                                            System.out.println("Masukkan nilai " + mataPelajaran[j] + " untuk " + namaSiswa[indexKelas][i] + " : ");
+                                            int nilai = sc.nextInt();
+                                            sc.nextLine();
+                                            totalNilaiPraktek += nilai;
+                                        }
                                     }
 
                                     // Simpan total nilai ke dalam array nilaiSiswa
-                                    nilaiSiswa[indexKelas][i] = totalNilai;
+                                    nilaiSiswa[indexKelas][0][i] = totalNilaiTugas;
+                                    nilaiSiswa[indexKelas][1][i] = totalNilaiUjian;
+                                    nilaiSiswa[indexKelas][2][i] = totalNilaiPraktek;
                                 }
 
                                 System.out.println("Pengisian nilai selesai.");
@@ -69,22 +88,30 @@ public class Draft {
                             }
                             break;
 
-                            case 2:
-    for (int i = 0; i < kelas.length; i++) {
-        for (int j = 0; j < kelas[i].length; j++) {
-            System.out.println("Kelas " + kelas[i][j] + ":");
-            if (nilaiSiswa[i] != null) {
-                for (int k = 0; k < nilaiSiswa[i].length; k++) {
-                    System.out.println("Nama mahasiswa " + (k + 1) + ": " + namaSiswa[i][k]);
-                    System.out.println("Rata-rata Nilai: " + calculateRataNilai(nilaiSiswa[i][k], mataPelajaran.length));
-                }
-            } else {
-                System.out.println("Belum ada data nilai untuk kelas ini.");
-            }
-        }
-    }
-    break;
+                        // ... (bagian kode sebelumnya)
 
+                        case 2:
+                        System.out.println("Nilai Setiap Kelas:");
+                        System.out.println("+-------+--------------+----------------+");
+                        System.out.println("| Kelas | Nama Siswa   | Rata-rata Nilai |");
+                        System.out.println("+-------+--------------+----------------+");
+                        for (int i = 0; i < kelas.length; i++) {
+                            if (nilaiSiswa[i][0] != null) {
+                                for (int k = 0; k < nilaiSiswa[i][0].length; k++) {
+                                    double rataTugas = calculateRataNilai(nilaiSiswa[i][0][k], 2);
+                                    double rataUjian = calculateRataNilai(nilaiSiswa[i][1][k], 2);
+                                    double rataPraktek = calculateRataNilai(nilaiSiswa[i][2][k], 1);
+                                    double rataNilai = (rataTugas + rataUjian + rataPraktek) / 3;
+                                    System.out.printf("| %-5s | %-12s | %-15.2f |\n", kelas[i], namaSiswa[i][k], rataNilai);
+                                }
+                            } else {
+                                System.out.println("| " + kelas[i] + " | Belum ada data nilai untuk kelas ini. | -              |");
+                            }
+                            System.out.println("+-------+--------------+----------------+");
+                        }
+                        break;
+
+// ... (bagian kode setelahnya)
 
                         case 3:
                             System.out.println("Keluar dari program.");
@@ -108,7 +135,7 @@ public class Draft {
         sc.close();
     }
 
-    private static int getIndexKelas(String kelasTerpilih) {
+    static int getIndexKelas(String kelasTerpilih) {
         // Mengonversi input 1a-1i menjadi indeks
         char kelasChar = kelasTerpilih.charAt(0);
         char subKelasChar = kelasTerpilih.charAt(1);
@@ -117,7 +144,7 @@ public class Draft {
             int indexKelas = (kelasChar - '1') * 9 + (subKelasChar - 'a');
             return indexKelas;
         } else {
-            return -1; // Mengembalikan -1 jika kelas tidak valid
+            return -1; 
         }
     }
 }
