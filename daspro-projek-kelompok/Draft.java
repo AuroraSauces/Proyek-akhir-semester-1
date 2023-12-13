@@ -114,7 +114,7 @@ public class Draft{
                     
                 }
             } else {
-                System.out.println("Login Gagal. Silakan coba lagi.");
+                System.out.println("Login Gagal Cuyy. Silakan coba lagi.");
             }
         } 
 
